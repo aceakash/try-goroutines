@@ -30,7 +30,7 @@ func findIn(haystack []string, needles []string) map[string]int {
 	res := map[string]int{}
 	for i, needle := range needles {
 		if i % 10000 == 0 {
-			fmt.Println(i, "needles found so far...")
+			log.Println(i, "needles found so far...")
 		}
 		for j, blade := range haystack {
 			if blade == needle {
