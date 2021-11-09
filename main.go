@@ -49,8 +49,8 @@ func loadFileLines(fileName string) []string {
 	return strings.Split(string(fileBytes), "\r\n")
 }
 
-func writeOutputToFile(res map[string]int, s string) error {
-	f, err := os.Create("out.txt")
+func writeOutputToFile(res map[string]int, fileName string) error {
+	f, err := os.Create(fileName)
 	defer func(f *os.File) {
 		err := f.Close()
 		if err != nil {
