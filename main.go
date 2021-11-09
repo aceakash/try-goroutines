@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -15,8 +17,32 @@ func main() {
 	needles := loadFileLines("150k_needles.txt")
 
 
+
 	now := time.Now()
-	res := findIn(haystack, needles)
+
+	concurrency := runtime.NumCPU()
+	batchSize := len(needles) / concurrency
+
+	res := make(map[string]int, len(needles))
+	resLock := sync.Mutex{}
+
+	wg := sync.WaitGroup{}
+	wg.Add(concurrency)
+
+	for i := 0; i < concurrency; i++ {
+		go func(i int) {
+			start := i*batchSize
+			upto := (i+1)*batchSize
+			batchResult := findIn(haystack, needles[start:upto])
+			resLock.Lock()
+			for k, v := range batchResult {
+				res[k] = v
+			}
+			resLock.Unlock()
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
 	fmt.Printf("Took %v\n", time.Since(now))
 
 	err := writeOutputToFile(res, "out.txt")
