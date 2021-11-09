@@ -27,15 +27,19 @@ func main() {
 
 
 func findIn(haystack []string, needles []string) map[string]int {
-	res := map[string]int{}
+	fastHaystack := make(map[string]int, len(haystack))
+	for i, h := range haystack {
+		fastHaystack[h] = i
+	}
+
+	res := make(map[string]int, len(needles))
 	for i, needle := range needles {
 		if i % 10000 == 0 {
 			log.Println(i, "needles found so far...")
 		}
-		for j, blade := range haystack {
-			if blade == needle {
-				res[blade] = j
-			}
+		index, ok := fastHaystack[needle]
+		if ok {
+			res[needle] = index
 		}
 	}
 	return res
